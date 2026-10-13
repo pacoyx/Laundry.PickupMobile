@@ -1,0 +1,34 @@
+<div class="login-screen">
+  <div class="brand">
+    <mat-icon>local_shipping</mat-icon>
+    <h1>Pickup Mobile</h1>
+    <p>Recojo de ropa en campo</p>
+  </div>
+
+  <form class="login-form" [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Usuario</mat-label>
+      <input matInput formControlName="username" autocomplete="username" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Contraseña</mat-label>
+      <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" autocomplete="current-password" />
+      <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())">
+        <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+    </mat-form-field>
+
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() }}</p>
+    }
+
+    <button mat-flat-button color="primary" class="submit-btn" type="submit" [disabled]="form.invalid || loading()">
+      @if (loading()) {
+        <mat-spinner diameter="22" />
+      } @else {
+        Ingresar
+      }
+    </button>
+  </form>
+</div>

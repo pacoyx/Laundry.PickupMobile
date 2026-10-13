@@ -1,0 +1,94 @@
+<div class="detail-screen">
+  @if (loading()) {
+    <div class="spinner-wrapper">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (error()) {
+    <app-error-state message="No se pudo cargar la guía de recojo." (retry)="load()" />
+  } @else if (guide(); as g) {
+    <div class="header">
+      <div>
+        <h1>{{ g.guideNumber }}</h1>
+        <span class="date">{{ g.pickupDate | date: 'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <app-status-chip [status]="g.status" />
+    </div>
+
+    @if (isDraft()) {
+      <button mat-stroked-button color="primary" class="edit-btn" (click)="edit()">
+        <mat-icon>edit</mat-icon>
+        Editar guía
+      </button>
+    }
+
+    <mat-card class="section">
+      <h3>Información general</h3>
+      <div class="info-row"><span class="label">Cliente</span><span>{{ g.customerName }}</span></div>
+      <div class="info-row"><span class="label">Empleado</span><span>{{ g.employeeName ?? 'Sin asignar' }}</span></div>
+      <div class="info-row">
+        <span class="label">Vehículo</span>
+        <span>{{ g.vehiclePlate ? g.vehiclePlate + ' - ' + g.vehicleDescription : 'Sin asignar' }}</span>
+      </div>
+      <div class="info-row"><span class="label">Total</span><span>S/ {{ g.totalAmount | number: '1.2-2' }}</span></div>
+    </mat-card>
+
+    <mat-card class="section">
+      <h3>Detalle de servicios</h3>
+      <table mat-table [dataSource]="g.details" class="details-table">
+        <ng-container matColumnDef="service">
+          <th mat-header-cell *matHeaderCellDef>Servicio</th>
+          <td mat-cell *matCellDef="let line">{{ line.serviceItemName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef>Cant.</th>
+          <td mat-cell *matCellDef="let line">{{ line.quantity }}</td>
+        </ng-container>
+        <ng-container matColumnDef="weight">
+          <th mat-header-cell *matHeaderCellDef>Peso</th>
+          <td mat-cell *matCellDef="let line">{{ line.weight ?? '-' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef>Total</th>
+          <td mat-cell *matCellDef="let line">S/ {{ line.total | number: '1.2-2' }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="detailColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: detailColumns"></tr>
+      </table>
+    </mat-card>
+
+    @if (g.observation) {
+      <mat-card class="section">
+        <h3>Observaciones</h3>
+        <p class="observation">{{ g.observation }}</p>
+      </mat-card>
+    }
+
+    <mat-card class="section">
+      <h3>Fotos</h3>
+      <app-photo-capture [guideId]="g.id" [editable]="isDraft()" [initialAttachments]="g.attachments" />
+    </mat-card>
+
+    <mat-card class="section">
+      <h3>Firma</h3>
+      @if (signatureUrl()) {
+        <div class="signature-preview">
+          <img [src]="signatureUrl()" alt="Firma del cliente" />
+          <div class="signature-actions">
+            <button mat-button (click)="downloadSignature()">
+              <mat-icon>download</mat-icon>
+              Descargar
+            </button>
+            @if (isDraft()) {
+              <button mat-button color="warn" (click)="deleteSignature()">
+                <mat-icon>delete</mat-icon>
+                Eliminar
+              </button>
+            }
+          </div>
+        </div>
+      } @else {
+        <p class="muted">Sin firma registrada.</p>
+      }
+    </mat-card>
+  }
+</div>

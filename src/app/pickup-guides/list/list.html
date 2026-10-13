@@ -1,0 +1,46 @@
+<div class="list-screen">
+  <div class="header">
+    <h1>Mis Guías</h1>
+    <button mat-mini-fab color="primary" routerLink="/pickup-guides/new" aria-label="Nueva guía">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="spinner-wrapper">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (error()) {
+    <app-error-state message="No se pudieron cargar tus guías de recojo." (retry)="load()" />
+  } @else if (guides().length === 0) {
+    <app-empty-state icon="assignment" title="Aún no tienes guías registradas" subtitle="Crea tu primera guía de recojo" />
+  } @else {
+    <div class="guide-list">
+      @for (guide of guides(); track guide.id) {
+        <mat-card class="guide-card" (click)="view(guide.id)">
+          <div class="guide-main">
+            <div class="guide-info">
+              <span class="guide-number">{{ guide.guideNumber }}</span>
+              <span class="customer">{{ guide.customer }}</span>
+              <span class="date">{{ guide.date | date: 'dd/MM/yyyy' }}</span>
+            </div>
+            <app-status-chip [status]="guide.status" />
+          </div>
+
+          <div class="guide-footer">
+            <div class="indicators">
+              <mat-icon [class.active]="guide.hasPhotos" matTooltip="Fotos">photo_camera</mat-icon>
+              <mat-icon [class.active]="guide.hasSignature" matTooltip="Firma">draw</mat-icon>
+            </div>
+            <div class="actions">
+              <button mat-button (click)="view(guide.id)">Ver</button>
+              @if (guide.status === PickupGuideStatus.Draft) {
+                <button mat-button color="primary" (click)="edit(guide.id, $event)">Editar</button>
+              }
+            </div>
+          </div>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

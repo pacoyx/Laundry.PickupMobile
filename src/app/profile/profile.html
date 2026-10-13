@@ -1,0 +1,47 @@
+<div class="profile-screen">
+  <div class="avatar">
+    <mat-icon>account_circle</mat-icon>
+    <h1>{{ auth.profile()?.fullName }}</h1>
+    <p>{{ auth.profile()?.username }}</p>
+  </div>
+
+  <mat-card class="info-card">
+    <h3>Roles</h3>
+    <div class="chip-list">
+      @for (role of auth.profile()?.roles; track role) {
+        <mat-chip disableRipple>{{ role }}</mat-chip>
+      } @empty {
+        <span class="muted">Sin roles asignados</span>
+      }
+    </div>
+  </mat-card>
+
+  <mat-card class="info-card">
+    <h3>Permisos</h3>
+    <div class="chip-list">
+      @for (permission of auth.profile()?.permissions; track permission) {
+        <mat-chip disableRipple>{{ permission }}</mat-chip>
+      } @empty {
+        <span class="muted">Sin permisos asignados</span>
+      }
+    </div>
+  </mat-card>
+
+  <mat-card class="info-card">
+    <h3>Sucursales asignadas</h3>
+    <mat-list>
+      @for (branch of auth.profile()?.branchSales; track branch.id) {
+        <mat-list-item>{{ branch.branchSalesName }}</mat-list-item>
+      } @empty {
+        <span class="muted">Sin sucursales asignadas</span>
+      }
+    </mat-list>
+  </mat-card>
+
+  <button mat-stroked-button color="warn" class="logout-btn" (click)="logout()">
+    <mat-icon>logout</mat-icon>
+    Cerrar sesión
+  </button>
+
+  <p class="version">Versión {{ appVersion }}</p>
+</div>

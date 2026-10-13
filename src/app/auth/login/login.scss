@@ -1,0 +1,60 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.login-screen {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(180deg, var(--mat-sys-primary-container, #cde5ff) 0%, #fff 55%);
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 32px;
+
+  mat-icon {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+    color: var(--mat-sys-primary, #006494);
+  }
+
+  h1 {
+    margin: 8px 0 0;
+    font-size: 24px;
+  }
+
+  p {
+    margin: 4px 0 0;
+    color: var(--mat-sys-on-surface-variant, #5f6368);
+  }
+}
+
+.login-form {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.submit-btn {
+  min-height: 52px;
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+.error {
+  color: var(--mat-sys-error, #b3261e);
+  font-size: 13px;
+  margin: 0 0 8px;
+}

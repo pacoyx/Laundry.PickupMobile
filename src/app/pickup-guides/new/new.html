@@ -1,0 +1,183 @@
+<div class="wizard-screen">
+  <div class="wizard-header">
+    <h1>{{ guideId() ? 'Editar Guía' : 'Nueva Guía de Recojo' }}</h1>
+    <button mat-icon-button (click)="cancel()" aria-label="Cancelar">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  @if (loadingInitial()) {
+    <div class="spinner-wrapper">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else {
+    <mat-stepper orientation="vertical" #stepper class="stepper">
+      <!-- Paso 1: Cliente -->
+      <mat-step [completed]="!!draft().customer" label="Cliente">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Buscar cliente</mat-label>
+          <input
+            matInput
+            [matAutocomplete]="customerAuto"
+            [value]="draft().customer?.businessName ?? ''"
+            (input)="onCustomerSearch($any($event.target).value)"
+            placeholder="Nombre o razón social"
+          />
+          <mat-autocomplete #customerAuto="matAutocomplete" (optionSelected)="selectCustomer($event.option.value)">
+            @for (customer of customerOptions(); track customer.id) {
+              <mat-option [value]="customer">{{ customer.businessName }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+
+        @if (branchSalesOptions.length > 1) {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Sucursal</mat-label>
+            <mat-select [value]="draft().branchSalesId" (selectionChange)="selectBranchSales($event.value)">
+              @for (branch of branchSalesOptions; track branch.id) {
+                <mat-option [value]="branch.branchSalesId">{{ branch.branchSalesName }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+
+        <div class="step-actions">
+          <button mat-flat-button color="primary" matStepperNext [disabled]="!draft().customer || !draft().branchSalesId">
+            Siguiente
+          </button>
+        </div>
+      </mat-step>
+
+      <!-- Paso 2: Empleado -->
+      <mat-step label="Empleado">
+        <p class="hint">El recolector asignado es siempre el usuario autenticado.</p>
+        <div class="employee-card">
+          <mat-icon>badge</mat-icon>
+          <span>{{ employeeDisplayName }}</span>
+        </div>
+        <div class="step-actions">
+          <button mat-button matStepperPrevious>Atrás</button>
+          <button mat-flat-button color="primary" matStepperNext>Siguiente</button>
+        </div>
+      </mat-step>
+
+      <!-- Paso 3: Vehículo -->
+      <mat-step label="Vehículo">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Vehículo (opcional)</mat-label>
+          <mat-select [value]="draft().vehicle" (selectionChange)="selectVehicle($event.value)" [compareWith]="compareVehicles">
+            <mat-option [value]="null">Sin vehículo</mat-option>
+            @for (vehicle of vehicles(); track vehicle.id) {
+              <mat-option [value]="vehicle">{{ vehicle.plate }} - {{ vehicle.description }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <div class="step-actions">
+          <button mat-button matStepperPrevious>Atrás</button>
+          <button mat-flat-button color="primary" matStepperNext>Siguiente</button>
+        </div>
+      </mat-step>
+
+      <!-- Paso 4: Detalle -->
+      <mat-step [completed]="draft().details.length > 0" label="Detalle">
+        @if (!draft().customer) {
+          <p class="hint">Seleccione un cliente para ver sus servicios disponibles.</p>
+        } @else if (serviceItems().length === 0) {
+          <p class="hint">El cliente no tiene una tarifa activa. No es posible agregar servicios.</p>
+        } @else {
+          <div class="new-line-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Servicio</mat-label>
+              <mat-select [(ngModel)]="newLineServiceItemId">
+                @for (item of serviceItems(); track item.id) {
+                  <mat-option [value]="item.id">{{ item.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <div class="line-fields">
+              <mat-form-field appearance="outline">
+                <mat-label>Cantidad</mat-label>
+                <input matInput type="number" min="1" [(ngModel)]="newLineQuantity" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Peso (kg)</mat-label>
+                <input matInput type="number" min="0" [(ngModel)]="newLineWeight" />
+              </mat-form-field>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Observación de la línea</mat-label>
+              <input matInput [(ngModel)]="newLineObservation" />
+            </mat-form-field>
+            <button mat-stroked-button color="primary" class="add-line-btn" (click)="addDetailLine()" [disabled]="!newLineServiceItemId">
+              <mat-icon>add</mat-icon>
+              Agregar línea
+            </button>
+          </div>
+        }
+
+        @if (draft().details.length > 0) {
+          <div class="detail-lines">
+            @for (line of draft().details; track $index) {
+              <div class="detail-line">
+                <div class="line-info">
+                  <span class="name">{{ line.serviceItemName }}</span>
+                  <span class="meta">{{ line.quantity }} und. @if (line.weight) { · {{ line.weight }} kg }</span>
+                </div>
+                <button mat-icon-button (click)="removeDetailLine($index)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+          <p class="estimated-total">Total estimado: S/ {{ estimatedTotal | number: '1.2-2' }}</p>
+        }
+
+        <div class="step-actions">
+          <button mat-button matStepperPrevious>Atrás</button>
+          <button mat-flat-button color="primary" matStepperNext [disabled]="draft().details.length === 0">Siguiente</button>
+        </div>
+      </mat-step>
+
+      <!-- Paso 5: Observaciones -->
+      <mat-step label="Observaciones">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Observaciones generales</mat-label>
+          <textarea matInput rows="4" [value]="draft().observation" (input)="updateObservation($any($event.target).value)"></textarea>
+        </mat-form-field>
+        <div class="step-actions">
+          <button mat-button matStepperPrevious>Atrás</button>
+          <button mat-flat-button color="primary" [disabled]="saving()" (click)="saveAndContinue(stepper)">
+            @if (saving()) {
+              <mat-spinner diameter="20" />
+            } @else {
+              Guardar y continuar
+            }
+          </button>
+        </div>
+      </mat-step>
+
+      <!-- Paso 6: Fotos -->
+      <mat-step label="Fotos">
+        @if (guideId()) {
+          <app-photo-capture [guideId]="guideId()!" [initialAttachments]="attachments()" />
+        }
+        <div class="step-actions">
+          <button mat-button matStepperPrevious>Atrás</button>
+          <button mat-flat-button color="primary" matStepperNext>Siguiente</button>
+        </div>
+      </mat-step>
+
+      <!-- Paso 7: Firma -->
+      <mat-step label="Firma">
+        <app-signature-pad (signatureSaved)="onSignatureSaved($event)" />
+        <div class="step-actions">
+          <button mat-button matStepperPrevious>Atrás</button>
+          <button mat-flat-button color="primary" (click)="finish()">
+            <mat-icon>check_circle</mat-icon>
+            Finalizar
+          </button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  }
+</div>
