@@ -211,3 +211,7 @@ git remote -v
 git status
 git push origin main
 ```
+
+## Licencia
+
+Software propietario de Lavandería Kyo. Todos los derechos reservados. Ver el archivo [LICENSE](LICENSE) para más detalles.
