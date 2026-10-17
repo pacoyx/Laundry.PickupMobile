@@ -21,7 +21,7 @@ interface PhotoItem {
   template: `
     <div class="actions">
       <button mat-stroked-button type="button" [disabled]="!editable()" (click)="cameraInput.click()">
-        <mat-icon>photo_camera</mat-icon>
+        <mat-icon>{{ icon() }}</mat-icon>
         Tomar foto
       </button>
       <button mat-stroked-button type="button" [disabled]="!editable()" (click)="galleryInput.click()">
@@ -38,7 +38,7 @@ interface PhotoItem {
     }
 
     @if (photos().length === 0 && !uploading()) {
-      <p class="empty">Sin fotos registradas.</p>
+      <p class="empty">{{ emptyLabel() }}</p>
     } @else {
       <div class="grid">
         @for (photo of photos(); track photo.attachment.id) {
@@ -107,13 +107,16 @@ export class PhotoCapture {
   readonly guideId = input.required<number>();
   readonly editable = input(true);
   readonly initialAttachments = input<PickupGuideAttachmentResponse[]>([]);
+  readonly attachmentType = input(PickupGuideAttachmentType.Photo);
+  readonly emptyLabel = input('Sin fotos registradas.');
+  readonly icon = input('photo_camera');
   readonly photos = signal<PhotoItem[]>([]);
   readonly uploading = signal(false);
 
   constructor() {
     effect(() => {
       const photoItems = this.initialAttachments()
-        .filter((a) => a.attachmentType === PickupGuideAttachmentType.Photo)
+        .filter((a) => a.attachmentType === this.attachmentType())
         .map((attachment) => ({ attachment, previewUrl: '' }));
       this.photos.set(photoItems);
       photoItems.forEach((item) => this.loadPreview(item));
@@ -137,7 +140,7 @@ export class PhotoCapture {
       return;
     }
     this.uploading.set(true);
-    this.attachmentsService.upload(this.guideId(), file, PickupGuideAttachmentType.Photo).subscribe({
+    this.attachmentsService.upload(this.guideId(), file, this.attachmentType()).subscribe({
       next: (httpEvent) => {
         if (httpEvent.type === HttpEventType.Response && httpEvent.body) {
           const attachment = httpEvent.body;

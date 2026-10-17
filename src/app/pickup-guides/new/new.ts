@@ -71,6 +71,8 @@ export class PickupGuideNew implements OnInit {
   private readonly notification = inject(NotificationService);
   readonly auth = inject(AuthService);
 
+  readonly physicalGuidePhotoType = PickupGuideAttachmentType.PhysicalGuidePhoto;
+
   readonly guideId = signal<number | null>(null);
   readonly loadingInitial = signal(false);
   readonly saving = signal(false);

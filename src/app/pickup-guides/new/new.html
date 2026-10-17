@@ -159,7 +159,17 @@
       <!-- Paso 6: Fotos -->
       <mat-step label="Fotos">
         @if (guideId()) {
+          <h3 class="photo-block-title">Foto de evidencia</h3>
           <app-photo-capture [guideId]="guideId()!" [initialAttachments]="attachments()" />
+
+          <h3 class="photo-block-title">Foto de guía física</h3>
+          <app-photo-capture
+            [guideId]="guideId()!"
+            [initialAttachments]="attachments()"
+            [attachmentType]="physicalGuidePhotoType"
+            icon="receipt_long"
+            emptyLabel="Sin foto de guía física registrada."
+          />
         }
         <div class="step-actions">
           <button mat-button matStepperPrevious>Atrás</button>

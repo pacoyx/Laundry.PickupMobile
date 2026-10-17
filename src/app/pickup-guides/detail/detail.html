@@ -69,6 +69,18 @@
     </mat-card>
 
     <mat-card class="section">
+      <h3>Foto de guía física</h3>
+      <app-photo-capture
+        [guideId]="g.id"
+        [editable]="isDraft()"
+        [initialAttachments]="g.attachments"
+        [attachmentType]="physicalGuidePhotoType"
+        icon="receipt_long"
+        emptyLabel="Sin foto de guía física registrada."
+      />
+    </mat-card>
+
+    <mat-card class="section">
       <h3>Firma</h3>
       @if (signatureUrl()) {
         <div class="signature-preview">

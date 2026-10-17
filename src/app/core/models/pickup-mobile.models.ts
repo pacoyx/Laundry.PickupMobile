@@ -17,7 +17,8 @@ export const PICKUP_GUIDE_STATUS_LABELS: Record<PickupGuideStatus, string> = {
 export enum PickupGuideAttachmentType {
   Photo = 1,
   Signature = 2,
-  Pdf = 3
+  Pdf = 3,
+  PhysicalGuidePhoto = 4
 }
 
 export interface CustomerLookup {

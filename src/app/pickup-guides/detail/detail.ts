@@ -43,6 +43,7 @@ export class PickupGuideDetailPage implements OnInit {
   private readonly notification = inject(NotificationService);
 
   readonly PickupGuideStatus = PickupGuideStatus;
+  readonly physicalGuidePhotoType = PickupGuideAttachmentType.PhysicalGuidePhoto;
   readonly detailColumns = ['service', 'quantity', 'weight', 'total'];
 
   readonly guide = signal<PickupGuideDetail | null>(null);
