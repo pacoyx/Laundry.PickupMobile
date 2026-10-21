@@ -8,7 +8,10 @@
   } @else if (guide(); as g) {
     <div class="header">
       <div>
-        <h1>{{ g.guideNumber }}</h1>
+        <h1>{{ g.physicalGuideNumber ? 'GS-' + g.physicalGuideNumber : g.guideNumber }}</h1>
+        @if (g.physicalGuideNumber) {
+          <span class="internal-number">Interno: {{ g.guideNumber }}</span>
+        }
         <span class="date">{{ g.pickupDate | date: 'dd/MM/yyyy HH:mm' }}</span>
       </div>
       <app-status-chip [status]="g.status" />
