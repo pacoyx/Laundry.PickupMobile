@@ -24,6 +24,7 @@
     <mat-card class="section">
       <h3>Información general</h3>
       <div class="info-row"><span class="label">Cliente</span><span>{{ g.customerName }}</span></div>
+      <div class="info-row"><span class="label">Guía física</span><span>{{ g.physicalGuideNumber ? 'GS-' + g.physicalGuideNumber : 'No registrada' }}</span></div>
       <div class="info-row"><span class="label">Empleado</span><span>{{ g.employeeName ?? 'Sin asignar' }}</span></div>
       <div class="info-row">
         <span class="label">Vehículo</span>

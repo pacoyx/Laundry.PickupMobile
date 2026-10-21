@@ -20,7 +20,12 @@
         <mat-card class="guide-card" (click)="view(guide.id)">
           <div class="guide-main">
             <div class="guide-info">
-              <span class="guide-number">{{ guide.guideNumber }}</span>
+              <span class="guide-number">
+                {{ guide.physicalGuideNumber ? 'GS-' + guide.physicalGuideNumber : guide.guideNumber }}
+                @if (guide.physicalGuideNumber) {
+                  <span class="guide-number-secondary">({{ guide.guideNumber }})</span>
+                }
+              </span>
               <span class="customer">{{ guide.customer }}</span>
               <span class="date">{{ guide.date | date: 'dd/MM/yyyy' }}</span>
             </div>

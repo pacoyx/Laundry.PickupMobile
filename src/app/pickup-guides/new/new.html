@@ -41,6 +41,21 @@
           </mat-form-field>
         }
 
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Número de guía física (opcional)</mat-label>
+          <input
+            matInput
+            maxlength="50"
+            [value]="draft().physicalGuideNumber"
+            [disabled]="!!guideId()"
+            (input)="updatePhysicalGuideNumber($any($event.target).value)"
+            placeholder="Ej. F001-00123"
+          />
+          @if (guideId()) {
+            <mat-hint>No se puede editar después de registrada la guía.</mat-hint>
+          }
+        </mat-form-field>
+
         <div class="step-actions">
           <button mat-flat-button color="primary" matStepperNext [disabled]="!draft().customer || !draft().branchSalesId">
             Siguiente

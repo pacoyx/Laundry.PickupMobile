@@ -52,6 +52,7 @@ export interface DashboardSummary {
 export interface PickupGuideListItem {
   id: number;
   guideNumber: string;
+  physicalGuideNumber: string | null;
   customer: string;
   date: string;
   status: PickupGuideStatus;
@@ -112,6 +113,7 @@ export interface PickupGuideRevision {
 export interface PickupGuideDetail {
   id: number;
   guideNumber: string;
+  physicalGuideNumber: string | null;
   customerId: number;
   customerName: string;
   branchSalesId: number;
@@ -137,11 +139,12 @@ export interface CreatePickupGuideRequest {
   branchSalesId: number;
   pickupDate: string;
   observation: string | null;
+  physicalGuideNumber: string | null;
   vehicleId: number | null;
   details: PickupGuideDetailLineRequest[];
 }
 
-export type UpdatePickupGuideRequest = CreatePickupGuideRequest;
+export type UpdatePickupGuideRequest = Omit<CreatePickupGuideRequest, 'physicalGuideNumber'>;
 
 export interface PickupGuideDraft {
   customer: CustomerLookup | null;
@@ -150,4 +153,5 @@ export interface PickupGuideDraft {
   pickupDate: Date;
   details: (PickupGuideDetailLineRequest & { serviceItemName: string; unitPrice: number })[];
   observation: string;
+  physicalGuideNumber: string;
 }

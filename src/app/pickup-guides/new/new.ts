@@ -29,6 +29,7 @@ import {
   PickupGuideDraft,
   PickupGuideStatus,
   ServiceItemLookup,
+  UpdatePickupGuideRequest,
   VehicleLookup
 } from '../../core/models/pickup-mobile.models';
 import { SignaturePad } from '../../shared/components/signature-pad/signature-pad';
@@ -89,7 +90,8 @@ export class PickupGuideNew implements OnInit {
     branchSalesId: null,
     pickupDate: new Date(),
     details: [],
-    observation: ''
+    observation: '',
+    physicalGuideNumber: ''
   });
 
   customerSearchTerm = '';
@@ -161,7 +163,8 @@ export class PickupGuideNew implements OnInit {
             serviceItemName: d.serviceItemName,
             unitPrice: d.unitPrice
           })),
-          observation: guide.observation ?? ''
+          observation: guide.observation ?? '',
+          physicalGuideNumber: guide.physicalGuideNumber ?? ''
         });
         this.loadServiceItems(guide.customerId);
         this.loadingInitial.set(false);
@@ -233,12 +236,16 @@ export class PickupGuideNew implements OnInit {
     this.draft.update((d) => ({ ...d, observation: value }));
   }
 
+  updatePhysicalGuideNumber(value: string): void {
+    this.draft.update((d) => ({ ...d, physicalGuideNumber: value }));
+  }
+
   canSaveDraft(): boolean {
     const d = this.draft();
     return !!d.customer && !!d.branchSalesId && d.details.length > 0;
   }
 
-  private buildRequest(): CreatePickupGuideRequest {
+  private buildUpdateRequest(): UpdatePickupGuideRequest {
     const d = this.draft();
     return {
       customerId: d.customer!.id,
@@ -250,15 +257,24 @@ export class PickupGuideNew implements OnInit {
     };
   }
 
+  private buildCreateRequest(): CreatePickupGuideRequest {
+    const d = this.draft();
+    return {
+      ...this.buildUpdateRequest(),
+      physicalGuideNumber: d.physicalGuideNumber || null
+    };
+  }
+
   ensureGuideSaved(onSuccess: () => void): void {
     if (!this.canSaveDraft()) {
       this.notification.error('Complete cliente y al menos un servicio antes de continuar.');
       return;
     }
     this.saving.set(true);
-    const request = this.buildRequest();
     const currentId = this.guideId();
-    const call = currentId ? this.pickupGuidesService.update(currentId, request) : this.pickupGuidesService.create(request);
+    const call = currentId
+      ? this.pickupGuidesService.update(currentId, this.buildUpdateRequest())
+      : this.pickupGuidesService.create(this.buildCreateRequest());
 
     call.subscribe({
       next: (guide) => {
