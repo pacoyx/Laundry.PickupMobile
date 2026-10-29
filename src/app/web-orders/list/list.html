@@ -1,0 +1,51 @@
+<div class="list-screen">
+  <div class="header">
+    <h1>Pedidos Web</h1>
+  </div>
+
+  <mat-card class="search-card">
+    <h3>Buscar por número de guía</h3>
+    <form class="search-form" [formGroup]="searchForm" (ngSubmit)="search()">
+      <mat-form-field appearance="outline" class="serie-field">
+        <mat-label>Serie</mat-label>
+        <input matInput formControlName="serie" placeholder="WEB" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="numero-field">
+        <mat-label>Número</mat-label>
+        <input matInput formControlName="numero" placeholder="000123" />
+      </mat-form-field>
+      <button mat-flat-button color="primary" type="submit" class="search-btn" [disabled]="searching() || searchForm.invalid">
+        @if (searching()) {
+          <mat-spinner diameter="20" />
+        } @else {
+          <mat-icon>search</mat-icon>
+        }
+      </button>
+    </form>
+  </mat-card>
+
+  @if (loading()) {
+    <div class="spinner-wrapper">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (error()) {
+    <app-error-state message="No se pudieron cargar tus pedidos web." (retry)="load()" />
+  } @else if (orders().length === 0) {
+    <app-empty-state icon="local_shipping" title="No tienes pedidos web pendientes" subtitle="Los pedidos que te asignen aparecerán aquí" />
+  } @else {
+    <div class="order-list">
+      @for (order of orders(); track order.id) {
+        <mat-card class="order-card" (click)="view(order)">
+          <div class="order-main">
+            <div class="order-info">
+              <span class="order-number">{{ order.workGuideSerie }}-{{ order.workGuideNumero }}</span>
+              <span class="address">{{ order.deliveryAddress }}</span>
+              <span class="date">{{ order.scheduledPickupDate | date: 'dd/MM/yyyy' }}</span>
+            </div>
+            <app-web-order-status-chip [status]="order.status" />
+          </div>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

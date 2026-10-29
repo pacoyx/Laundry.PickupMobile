@@ -1,0 +1,58 @@
+<div class="detail-screen">
+  @if (loading()) {
+    <div class="spinner-wrapper">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (error()) {
+    <app-error-state message="No se pudo cargar el pedido web." (retry)="load()" />
+  } @else if (order(); as o) {
+    <div class="header">
+      <div>
+        <h1>{{ o.workGuideSerie }}-{{ o.workGuideNumero }}</h1>
+        <span class="order-code">Pedido {{ o.orderNumber }}</span>
+      </div>
+      <app-web-order-status-chip [status]="o.status" />
+    </div>
+
+    <mat-card class="section">
+      <h3>Datos de recojo</h3>
+      <div class="info-row"><span class="label">Dirección</span><span>{{ o.deliveryAddress }}</span></div>
+      <div class="info-row"><span class="label">Teléfono</span><span>{{ o.contactPhone }}</span></div>
+      <div class="info-row"><span class="label">Fecha programada</span><span>{{ o.scheduledPickupDate | date: 'dd/MM/yyyy HH:mm' }}</span></div>
+    </mat-card>
+
+    <mat-card class="section">
+      <h3>Evidencia fotográfica</h3>
+      <app-web-order-photo-upload [webOrderId]="o.id" [editable]="isProgramado()" />
+    </mat-card>
+
+    @if (isProgramado()) {
+      <mat-card class="section">
+        <h3>Marcar como recogido</h3>
+        <form [formGroup]="completeForm" (ngSubmit)="complete()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Observación (opcional)</mat-label>
+            <textarea
+              matInput
+              formControlName="observation"
+              rows="3"
+              placeholder="Ej: Faltó 1 camisa, el cliente avisó que la trae después"
+            ></textarea>
+          </mat-form-field>
+          <button mat-flat-button color="primary" type="submit" class="complete-btn" [disabled]="completing()">
+            @if (completing()) {
+              <mat-spinner diameter="20" />
+            } @else {
+              <mat-icon>check_circle</mat-icon>
+            }
+            Marcar como recogido
+          </button>
+        </form>
+      </mat-card>
+    } @else {
+      <mat-card class="section">
+        <p class="muted">Este pedido ya fue marcado como recogido.</p>
+      </mat-card>
+    }
+  }
+</div>

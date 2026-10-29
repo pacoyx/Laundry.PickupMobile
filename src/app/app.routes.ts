@@ -39,6 +39,14 @@ export const routes: Routes = [
         loadComponent: () => import('./pickup-guides/new/new').then((m) => m.PickupGuideNew)
       },
       {
+        path: 'web-orders',
+        loadComponent: () => import('./web-orders/list/list').then((m) => m.WebOrdersList)
+      },
+      {
+        path: 'web-orders/:serie/:numero',
+        loadComponent: () => import('./web-orders/detail/detail').then((m) => m.WebOrderDetailPage)
+      },
+      {
         path: 'profile',
         loadComponent: () => import('./profile/profile').then((m) => m.Profile)
       }
