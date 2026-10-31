@@ -47,6 +47,10 @@ export const routes: Routes = [
         loadComponent: () => import('./web-orders/detail/detail').then((m) => m.WebOrderDetailPage)
       },
       {
+        path: 'documentos',
+        loadComponent: () => import('./documentos/list/list').then((m) => m.DocumentosList)
+      },
+      {
         path: 'profile',
         loadComponent: () => import('./profile/profile').then((m) => m.Profile)
       }

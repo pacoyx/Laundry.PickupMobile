@@ -40,6 +40,10 @@ import { AuthService } from '../../core/services/auth.service';
         <mat-icon>local_shipping</mat-icon>
         <span>Pedidos Web</span>
       </a>
+      <a routerLink="/documentos" routerLinkActive="active" class="nav-item">
+        <mat-icon>folder_shared</mat-icon>
+        <span>Documentos</span>
+      </a>
       <a routerLink="/profile" routerLinkActive="active" class="nav-item">
         <mat-icon>account_circle</mat-icon>
         <span>Perfil</span>

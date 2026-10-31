@@ -1,0 +1,35 @@
+<div class="list-screen">
+  <div class="header">
+    <h1>Documentos</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="spinner-wrapper">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (error()) {
+    <app-error-state message="No se pudieron cargar tus documentos." (retry)="load()" />
+  } @else if (documents().length === 0) {
+    <app-empty-state icon="folder_shared" title="No tienes documentos compartidos" subtitle="Cuando alguien te comparta un archivo, aparecerá aquí" />
+  } @else {
+    <div class="document-list">
+      @for (doc of documents(); track doc.id) {
+        <mat-card class="document-card" (click)="open(doc)">
+          <div class="document-main">
+            <mat-icon class="document-icon">picture_as_pdf</mat-icon>
+            <div class="document-info">
+              <span class="document-title">{{ doc.title }}</span>
+              <span class="document-category">{{ doc.category }}</span>
+              <span class="document-date">Compartido el {{ doc.createdAt | date: 'dd/MM/yyyy' }} por {{ doc.uploadedByUserName }}</span>
+            </div>
+            @if (downloadingId() === doc.id) {
+              <mat-spinner diameter="22" />
+            } @else {
+              <mat-icon class="open-icon" matTooltip="Abrir">open_in_new</mat-icon>
+            }
+          </div>
+        </mat-card>
+      }
+    </div>
+  }
+</div>
