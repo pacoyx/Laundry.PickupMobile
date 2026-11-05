@@ -2,8 +2,10 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { LoadingOverlay } from '../../shared/components/loading-overlay/loading-overlay';
 import { AuthService } from '../../core/services/auth.service';
+import { MoreMenuSheet } from './more-menu-sheet/more-menu-sheet';
 
 @Component({
   selector: 'app-main-layout',
@@ -40,14 +42,10 @@ import { AuthService } from '../../core/services/auth.service';
         <mat-icon>local_shipping</mat-icon>
         <span>Pedidos Web</span>
       </a>
-      <a routerLink="/documentos" routerLinkActive="active" class="nav-item">
-        <mat-icon>folder_shared</mat-icon>
-        <span>Documentos</span>
-      </a>
-      <a routerLink="/profile" routerLinkActive="active" class="nav-item">
-        <mat-icon>account_circle</mat-icon>
-        <span>Perfil</span>
-      </a>
+      <button type="button" class="nav-item" (click)="abrirMas()">
+        <mat-icon>more_horiz</mat-icon>
+        <span>Más</span>
+      </button>
     </nav>
   `,
   styles: `
@@ -96,6 +94,10 @@ import { AuthService } from '../../core/services/auth.service';
       text-decoration: none;
       color: var(--mat-sys-on-surface-variant, #5f6368);
       font-size: 11px;
+      border: none;
+      background: none;
+      font-family: inherit;
+      cursor: pointer;
     }
     .nav-item.active {
       color: var(--mat-sys-primary, #006494);
@@ -120,4 +122,9 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class MainLayout {
   readonly auth = inject(AuthService);
+  private readonly bottomSheet = inject(MatBottomSheet);
+
+  abrirMas(): void {
+    this.bottomSheet.open(MoreMenuSheet);
+  }
 }
